@@ -25,6 +25,8 @@ dependencies:
   cupertino_icons: ^0.1.2
   http: any
   dbcrypt: ^1.0.0
+  fluttery_seekbar: ^0.0.1
+  cached_network_image: 1.0.0
 
 dev_dependencies:
   flutter_test:

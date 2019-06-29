@@ -5,6 +5,8 @@ import 'package:neuro_hack/model/contact.dart';
 import 'package:neuro_hack/presenter/contact_list_view_contract.dart';
 import 'package:neuro_hack/presenter/contact_list_view_presenter.dart';
 
+import 'evaluate_view.dart';
+
 class ContactTile extends StatefulWidget {
   final ContactTileState _state;
 
@@ -23,8 +25,11 @@ class ContactTileState extends State<ContactTile> {
   Widget build(BuildContext context) {
     return ListTile(
       leading: CircleAvatar(
-        child: Image.memory(base64Decode(contact.avatar)),
-      ),
+          radius: 30.0,
+          backgroundColor: Colors.transparent,
+          child: ClipOval(
+            child: Image.memory(base64Decode(contact.avatar)),
+          )),
       title: Text(contact.name),
       subtitle: Text(contact.surname),
     );
@@ -63,13 +68,26 @@ class ContactsViewState extends State<ContactsView>
             : Column(
                 children: <Widget>[
                   Flexible(
-                    child: ListView.builder(
+                      child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EvaluateView()));
+                    },
+                    child: ListView.separated(
                         itemCount: _contacts.length,
+                        separatorBuilder: (BuildContext context, int index) {
+                          return Divider(
+                            height: 20,
+                            color: Colors.black38,
+                          );
+                        },
                         itemBuilder: (BuildContext context, int index) {
                           final Contact contact = _contacts[index];
                           return ContactTile(contact);
                         }),
-                  )
+                  )),
                 ],
               ));
   }
@@ -78,7 +96,6 @@ class ContactsViewState extends State<ContactsView>
   void onContactsFetchComplete(List<Contact> items) {
     setState(() {
       this._isLoading = false;
-
       this._contacts = items;
     });
   }

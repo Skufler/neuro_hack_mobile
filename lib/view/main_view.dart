@@ -1,12 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_hack/model/recommendation.dart';
+import 'package:neuro_hack/model/user.dart';
 import 'package:neuro_hack/presenter/main_list_view_contract.dart';
 import 'package:neuro_hack/presenter/main_list_view_presenter.dart';
 
 import 'dart:convert';
 
+import '../constants.dart';
 import 'account_view.dart';
 import 'contact_view.dart';
+
+class ExpandableText extends StatefulWidget {
+  ExpandableText(this.text);
+
+  final String text;
+
+  @override
+  _ExpandableTextState createState() => new _ExpandableTextState();
+}
+
+class _ExpandableTextState extends State<ExpandableText>
+    with TickerProviderStateMixin<ExpandableText> {
+  bool isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: <Widget>[
+      AnimatedSize(
+          vsync: this,
+          duration: const Duration(milliseconds: 500),
+          child: ConstrainedBox(
+              constraints: isExpanded
+                  ? BoxConstraints()
+                  : BoxConstraints(maxHeight: 50.0),
+              child: Text(
+                widget.text,
+                softWrap: true,
+                overflow: TextOverflow.fade,
+              ))),
+      isExpanded
+          ? Container(
+              child: InkWell(
+                child: Column(
+                  children: <Widget>[
+                    Divider(
+                      height: 20,
+                      color: Colors.black,
+                    ),
+                    Text('Hide')
+                  ],
+                ),
+                onTap: () {
+                  setState(() {
+                    isExpanded = !isExpanded;
+                  });
+                },
+              ),
+            )
+          : Column(children: <Widget>[
+              Divider(
+                height: 20,
+                color: Colors.black,
+              ),
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    isExpanded = !isExpanded;
+                  });
+                },
+                child: Container(
+                  child: Text(isExpanded ? 'Hide' : 'Expand'),
+                  padding: EdgeInsets.only(bottom: 20),
+                ),
+              )
+            ]),
+    ]);
+  }
+}
 
 class MainView extends StatefulWidget {
   @override
@@ -24,7 +94,6 @@ class RecommendationTile extends StatefulWidget {
 }
 
 class RecommendationTileState extends State<RecommendationTile> {
-  bool _isExpanded = false;
   Recommendation recommendation;
 
   RecommendationTileState(this.recommendation);
@@ -32,6 +101,12 @@ class RecommendationTileState extends State<RecommendationTile> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      margin: EdgeInsets.all(10),
+      semanticContainer: true,
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
       elevation: 10,
       child: Container(
         child: Column(
@@ -43,26 +118,9 @@ class RecommendationTileState extends State<RecommendationTile> {
               height: 200,
             ),
             Container(
-                margin: EdgeInsets.all(20),
-                child: Text(
-                  recommendation.text,
-                  maxLines: this._isExpanded ? null : 3,
-                )),
-            Divider(
-              height: 20,
-              color: Colors.black,
+              margin: EdgeInsets.all(20),
+              child: ExpandableText(recommendation.text),
             ),
-            InkWell(
-              onTap: () {
-                setState(() {
-                  this._isExpanded = !this._isExpanded;
-                });
-              },
-              child: Container(
-                child: Text('Expand'),
-                padding: EdgeInsets.only(bottom: 20),
-              ),
-            )
           ],
         ),
       ),
@@ -93,13 +151,16 @@ class MainViewState extends State<MainView>
     final List<Widget> _children = [
       ContactsView(),
       _recommendationsWidget(),
-      AccountView(),
+      AccountView(User(
+          uid: 1,
+          name: 'Валерий',
+          surname: 'Жмышенко',
+          email: 'matviei.skufin@gmail.com',
+          age: 56,
+          avatar: Constants.avatar)),
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Main'),
-      ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : _children[_currentIndex],
@@ -108,7 +169,7 @@ class MainViewState extends State<MainView>
           onTap: onTabTapped,
           items: [
             BottomNavigationBarItem(
-                icon: Icon(Icons.group), title: Text('Контакты')),
+                icon: Icon(Icons.group), title: Text('Оценить')),
             BottomNavigationBarItem(
                 icon: Icon(Icons.announcement), title: Text('Рекомендации')),
             BottomNavigationBarItem(
@@ -134,7 +195,7 @@ class MainViewState extends State<MainView>
                 final Recommendation recommendation = _recommendations[index];
                 return RecommendationTile(recommendation);
               }),
-        )
+        ),
       ],
     );
   }
