@@ -12,9 +12,8 @@ class RecommendationRepositoryImpl implements RecommendationRepository {
   Future<List<Recommendation>> fetchRecommendations(int index) async {
     http.Response response = await http
         .get(Constants.serviceURL + "recommendation/new/" + index.toString());
+
     var responseBody = json.decode(response.body);
-    print(responseBody);
-    print(response.body);
     final statusCode = response.statusCode;
 
     if (statusCode != 200 || responseBody == null)

@@ -5,16 +5,16 @@ import 'package:neuro_hack/presenter/contact_view_contract.dart';
 import 'package:neuro_hack/presenter/contact_view_presenter.dart';
 
 var _params = {
-  'partnership': 0,
-  'joint': 0,
-  'responsibility': 0,
-  'kindness': 0,
-  'trust': 0,
-  'anger': 0,
-  'irritability': 0,
-  'compliance': 0,
-  'sociopathy': 0,
-  'isolation': 0,
+  'partnership': 5,
+  'joint': 5,
+  'responsibility': 5,
+  'kindness': 5,
+  'trust': 5,
+  'anger': 5,
+  'irritability': 5,
+  'compliance': 5,
+  'sociopathy': 5,
+  'isolation': 5,
 };
 
 class EvaluateWidget extends StatefulWidget {
@@ -35,12 +35,31 @@ class EvaluateWidgetState extends State<EvaluateWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Card(
       margin: EdgeInsets.all(10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(description[0].toUpperCase() + description.substring(1)),
+          Padding(
+            padding: EdgeInsets.only(top: 10),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Expanded(
+                child: Text(
+                  description[0].toUpperCase() + description.substring(1),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  _progress.toInt().toString(),
+                ),
+              )
+            ],
+          ),
           Slider(
             min: 1,
             max: 10,
@@ -53,7 +72,6 @@ class EvaluateWidgetState extends State<EvaluateWidget> {
               });
             },
           ),
-          Text(_progress.toInt().toString())
         ],
       ),
     );
@@ -98,7 +116,12 @@ class EvaluateViewState extends State<EvaluateView>
                     ],
                   );
                 })),
-        OutlineButton(
+        RaisedButton(
+          color: Colors.green,
+          child: Text(
+            'Send',
+            style: TextStyle(color: Colors.white),
+          ),
           onPressed: () {
             _presenter.sendEvalData(EvalData(
                 evaluator: 1,
@@ -133,6 +156,9 @@ class EvaluateViewState extends State<EvaluateView>
   @override
   void onEvalDataFetchComplete(String status) {
     // TODO: implement onEvalDataFetchComplete
+    if (status == "Ok") {
+      Navigator.pop(context, _contact);
+    }
   }
 
   @override

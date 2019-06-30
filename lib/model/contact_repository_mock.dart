@@ -11,8 +11,7 @@ class ContactRepositoryMock implements ContactRepository {
 
   @override
   Future<String> sendEvalData(EvalData evalData) {
-    // TODO: implement sendEvalData
-    return null;
+    throw new UnimplementedError();
   }
 }
 

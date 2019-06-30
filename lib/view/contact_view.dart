@@ -8,39 +8,6 @@ import 'package:neuro_hack/presenter/contact_view_presenter.dart';
 
 import 'evaluate_view.dart';
 
-class ContactTile extends StatefulWidget {
-  final ContactTileState _state;
-
-  ContactTile(Contact contact) : _state = ContactTileState(contact);
-
-  @override
-  ContactTileState createState() => _state;
-}
-
-class ContactTileState extends State<ContactTile> {
-  Contact contact;
-
-  ContactTileState(this.contact);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      onTap: () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => EvaluateView(contact)));
-      },
-      leading: CircleAvatar(
-          radius: 30.0,
-          backgroundColor: Colors.transparent,
-          child: ClipOval(
-            child: Image.memory(base64Decode(contact.avatar)),
-          )),
-      title: Text(contact.name),
-      subtitle: Text(contact.surname),
-    );
-  }
-}
-
 class ContactsView extends StatefulWidget {
   @override
   ContactsViewState createState() => ContactsViewState();
@@ -56,15 +23,39 @@ class ContactsViewState extends State<ContactsView>
   void initState() {
     super.initState();
     _presenter.loadContacts(1);
-    this._isLoading = true;
-
-    /*Timer.periodic(Duration(seconds: 10), (_timer) {
-      _presenter.loadContacts(1);
-    });*/
+    _isLoading = true;
   }
 
   ContactsViewState() {
     _presenter = new ContactViewPresenter(this);
+  }
+
+  Widget _buildTile(BuildContext context, Contact contact) {
+    return ListTile(
+      onTap: () async {
+        var remove = await Navigator.push(context,
+            MaterialPageRoute(builder: (context) => EvaluateView(contact)));
+        /*
+        70 (курс доллара) * 300 (количество человек в домклике) * 150 (цена интерфейса) = 3,150,000
+        45000$
+
+        Средняя зарплата 4000$ (средняя по миру)
+
+          * 3 - кнопка премиум
+          * */
+        setState(() {
+          _contacts.remove(remove);
+        });
+      },
+      leading: CircleAvatar(
+          radius: 30.0,
+          backgroundColor: Colors.transparent,
+          child: ClipOval(
+            child: Image.memory(base64Decode(contact.avatar)),
+          )),
+      title: Text(contact.name),
+      subtitle: Text(contact.surname),
+    );
   }
 
   @override
@@ -76,20 +67,29 @@ class ContactsViewState extends State<ContactsView>
               )
             : Column(
                 children: <Widget>[
-                  Flexible(
-                    child: ListView.separated(
-                        itemCount: _contacts.length,
-                        separatorBuilder: (BuildContext context, int index) {
-                          return Divider(
-                            height: 20,
-                            color: Colors.black38,
-                          );
-                        },
-                        itemBuilder: (BuildContext context, int index) {
-                          final Contact contact = _contacts[index];
-                          return ContactTile(contact);
-                        }),
-                  ),
+                  _contacts.length > 0
+                      ? Flexible(
+                          child: ListView.separated(
+                              itemCount: _contacts.length,
+                              separatorBuilder:
+                                  (BuildContext context, int index) {
+                                return Divider(
+                                  height: 20,
+                                  color: Colors.black38,
+                                );
+                              },
+                              itemBuilder: (BuildContext context, int index) {
+                                final Contact contact = _contacts[index];
+                                return _buildTile(context, contact);
+                              }),
+                        )
+                      : Expanded(
+                          child: Center(
+                          child: Text(
+                            'List is empty',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ))
                 ],
               ));
   }

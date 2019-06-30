@@ -33,6 +33,18 @@ class AccountViewState extends State<AccountView> {
             ),
           ),
           child: Column(children: [
+            Container(
+              padding: EdgeInsets.only(top: 50),
+              width: 150,
+              child: RaisedButton(
+                onPressed: () {},
+                child: Text(
+                  'Buy premium',
+                  style: TextStyle(color: Colors.black),
+                ),
+                color: Colors.yellowAccent,
+              ),
+            ),
             Expanded(
               flex: 3,
               child: Center(

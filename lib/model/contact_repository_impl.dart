@@ -29,7 +29,6 @@ class ContactRepositoryImpl implements ContactRepository {
 
   @override
   Future<String> sendEvalData(EvalData evalData) async {
-    print(json.encode(evalData));
     http.Response response = await http.post(
       Constants.serviceURL + "eval/send/",
       body: json.encode(evalData),
@@ -43,7 +42,6 @@ class ContactRepositoryImpl implements ContactRepository {
       throw new FetchDataException(
           message: "An error ocurred {Status code $statusCode}");
     var result = responseBody['status'];
-    print("REs: " + result);
     return result;
   }
 }
