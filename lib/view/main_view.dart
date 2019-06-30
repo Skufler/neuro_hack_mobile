@@ -1,8 +1,11 @@
+import 'dart:async';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:neuro_hack/model/recommendation.dart';
 import 'package:neuro_hack/model/user.dart';
-import 'package:neuro_hack/presenter/main_list_view_contract.dart';
-import 'package:neuro_hack/presenter/main_list_view_presenter.dart';
+import 'package:neuro_hack/presenter/main_view_contract.dart';
+import 'package:neuro_hack/presenter/main_view_presenter.dart';
 
 import 'dart:convert';
 
@@ -114,13 +117,14 @@ class RecommendationTileState extends State<RecommendationTile> {
             Image.memory(
               base64Decode(recommendation.picture),
               width: double.infinity,
-              fit: BoxFit.fill,
-              height: 200,
+              alignment: Alignment.topCenter,
+              fit: BoxFit.fitWidth,
+              height: 250,
             ),
             Container(
               margin: EdgeInsets.all(20),
               child: ExpandableText(recommendation.text),
-            ),
+            )
           ],
         ),
       ),
@@ -129,15 +133,15 @@ class RecommendationTileState extends State<RecommendationTile> {
 }
 
 class MainViewState extends State<MainView>
-    implements RecommendationListViewContract {
+    implements RecommendationListContract {
   int _currentIndex = 1;
   bool _isLoading = false;
 
-  RecommendationListViewPresenter _presenter;
+  RecommendationListPresenter _presenter;
   List<Recommendation> _recommendations = [];
 
   MainViewState() {
-    _presenter = new RecommendationListViewPresenter(this);
+    _presenter = new RecommendationListPresenter(this);
   }
 
   void onTabTapped(int index) {
@@ -183,13 +187,18 @@ class MainViewState extends State<MainView>
     super.initState();
     _presenter.loadRecommendations(1);
     _isLoading = true;
+
+    /* Timer.periodic(Duration(seconds: 10), (_timer) {
+      _presenter.loadRecommendations(1);
+    });*/
   }
 
   Widget _recommendationsWidget() {
     return Column(
       children: <Widget>[
-        Flexible(
+        Expanded(
           child: ListView.builder(
+              shrinkWrap: true,
               itemCount: _recommendations.length,
               itemBuilder: (BuildContext context, int index) {
                 final Recommendation recommendation = _recommendations[index];
@@ -210,6 +219,8 @@ class MainViewState extends State<MainView>
 
   @override
   void onRecommendationsFetchFailure() {
-    // TODO: implement onFetchFailure
+    Scaffold.of(context).showSnackBar(new SnackBar(
+      content: new Text('Couldn\'t get info from server'),
+    ));
   }
 }

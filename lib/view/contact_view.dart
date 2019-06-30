@@ -1,9 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:neuro_hack/model/contact.dart';
-import 'package:neuro_hack/presenter/contact_list_view_contract.dart';
-import 'package:neuro_hack/presenter/contact_list_view_presenter.dart';
+import 'package:neuro_hack/presenter/contact_view_contract.dart';
+import 'package:neuro_hack/presenter/contact_view_presenter.dart';
 
 import 'evaluate_view.dart';
 
@@ -24,6 +25,10 @@ class ContactTileState extends State<ContactTile> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      onTap: () {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => EvaluateView(contact)));
+      },
       leading: CircleAvatar(
           radius: 30.0,
           backgroundColor: Colors.transparent,
@@ -42,20 +47,24 @@ class ContactsView extends StatefulWidget {
 }
 
 class ContactsViewState extends State<ContactsView>
-    implements ContactListViewContract {
+    implements ContactViewContract {
   List<Contact> _contacts = [];
-  ContactListViewPresenter _presenter;
+  ContactViewPresenter _presenter;
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _presenter.loadContacts();
+    _presenter.loadContacts(1);
     this._isLoading = true;
+
+    /*Timer.periodic(Duration(seconds: 10), (_timer) {
+      _presenter.loadContacts(1);
+    });*/
   }
 
   ContactsViewState() {
-    _presenter = new ContactListViewPresenter(this);
+    _presenter = new ContactViewPresenter(this);
   }
 
   @override
@@ -68,13 +77,6 @@ class ContactsViewState extends State<ContactsView>
             : Column(
                 children: <Widget>[
                   Flexible(
-                      child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EvaluateView()));
-                    },
                     child: ListView.separated(
                         itemCount: _contacts.length,
                         separatorBuilder: (BuildContext context, int index) {
@@ -87,7 +89,7 @@ class ContactsViewState extends State<ContactsView>
                           final Contact contact = _contacts[index];
                           return ContactTile(contact);
                         }),
-                  )),
+                  ),
                 ],
               ));
   }
@@ -102,6 +104,18 @@ class ContactsViewState extends State<ContactsView>
 
   @override
   void onContactsFetchFailure() {
-    // TODO: implement onContactsFetchFailure
+    Scaffold.of(context).showSnackBar(new SnackBar(
+      content: new Text('Couldn\'t get info from server'),
+    ));
+  }
+
+  @override
+  void onEvalDataFetchComplete(String status) {
+    // TODO: implement onEvalDataFetchComplete
+  }
+
+  @override
+  void onEvalDataFetchFailure() {
+    // TODO: implement onEvalDataFetchFailure
   }
 }

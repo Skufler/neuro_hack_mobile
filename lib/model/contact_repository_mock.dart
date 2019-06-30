@@ -1,11 +1,18 @@
 import 'package:neuro_hack/model/contact.dart';
 
 import 'contact_repository.dart';
+import 'eval_data.dart';
 
 class ContactRepositoryMock implements ContactRepository {
   @override
-  Future<List<Contact>> fetchContacts() {
+  Future<List<Contact>> fetchContacts(int id) {
     return new Future.value(contacts);
+  }
+
+  @override
+  Future<String> sendEvalData(EvalData evalData) {
+    // TODO: implement sendEvalData
+    return null;
   }
 }
 

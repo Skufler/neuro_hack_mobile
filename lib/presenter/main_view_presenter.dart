@@ -1,13 +1,13 @@
 import 'package:neuro_hack/model/recommendation_repository.dart';
 
 import '../dependency_injection.dart';
-import 'main_list_view_contract.dart';
+import 'main_view_contract.dart';
 
-class RecommendationListViewPresenter {
-  RecommendationListViewContract _view;
+class RecommendationListPresenter {
+  RecommendationListContract _view;
   RecommendationRepository _repository;
 
-  RecommendationListViewPresenter(this._view) {
+  RecommendationListPresenter(this._view) {
     this._repository = new Injector().recommendationRepository;
   }
 
