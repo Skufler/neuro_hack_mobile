@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -15,9 +14,9 @@ class ContactsView extends StatefulWidget {
 
 class ContactsViewState extends State<ContactsView>
     implements ContactViewContract {
+  bool _isLoading = false;
   List<Contact> _contacts = [];
   ContactViewPresenter _presenter;
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -35,14 +34,6 @@ class ContactsViewState extends State<ContactsView>
       onTap: () async {
         var remove = await Navigator.push(context,
             MaterialPageRoute(builder: (context) => EvaluateView(contact)));
-        /*
-        70 (курс доллара) * 300 (количество человек в домклике) * 150 (цена интерфейса) = 3,150,000
-        45000$
-
-        Средняя зарплата 4000$ (средняя по миру)
-
-          * 3 - кнопка премиум
-          * */
         setState(() {
           _contacts.remove(remove);
         });
@@ -107,15 +98,5 @@ class ContactsViewState extends State<ContactsView>
     Scaffold.of(context).showSnackBar(new SnackBar(
       content: new Text('Couldn\'t get info from server'),
     ));
-  }
-
-  @override
-  void onEvalDataFetchComplete(String status) {
-    // TODO: implement onEvalDataFetchComplete
-  }
-
-  @override
-  void onEvalDataFetchFailure() {
-    // TODO: implement onEvalDataFetchFailure
   }
 }

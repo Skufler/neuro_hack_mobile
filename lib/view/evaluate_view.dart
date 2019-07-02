@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_hack/model/contact.dart';
 import 'package:neuro_hack/model/eval_data.dart';
-import 'package:neuro_hack/presenter/contact_view_contract.dart';
-import 'package:neuro_hack/presenter/contact_view_presenter.dart';
+import 'package:neuro_hack/presenter/eval_send_view_contract.dart';
+import 'package:neuro_hack/presenter/eval_send_view_presenter.dart';
 
 var _params = {
   'partnership': 5,
@@ -18,13 +18,12 @@ var _params = {
 };
 
 class EvaluateWidget extends StatefulWidget {
-  final EvaluateWidgetState _state;
+  final String _description;
 
-  EvaluateWidget(String description)
-      : _state = EvaluateWidgetState(description);
+  EvaluateWidget(String description) : this._description = description;
 
   @override
-  EvaluateWidgetState createState() => _state;
+  EvaluateWidgetState createState() => new EvaluateWidgetState(_description);
 }
 
 class EvaluateWidgetState extends State<EvaluateWidget> {
@@ -79,18 +78,18 @@ class EvaluateWidgetState extends State<EvaluateWidget> {
 }
 
 class EvaluateView extends StatefulWidget {
-  final EvaluateViewState _state;
+  final Contact _contact;
 
-  EvaluateView(Contact contact) : _state = EvaluateViewState(contact);
+  EvaluateView(Contact contact) : this._contact = contact;
 
   @override
-  EvaluateViewState createState() => _state;
+  EvaluateViewState createState() => new EvaluateViewState(_contact);
 }
 
 class EvaluateViewState extends State<EvaluateView>
-    implements ContactViewContract {
+    implements EvalSendViewContract {
   Contact _contact;
-  ContactViewPresenter _presenter;
+  EvalSendViewPresenter _evalPresenter;
 
   EvaluateViewState(this._contact);
 
@@ -98,7 +97,7 @@ class EvaluateViewState extends State<EvaluateView>
   void initState() {
     super.initState();
 
-    _presenter = new ContactViewPresenter(this);
+    _evalPresenter = new EvalSendViewPresenter(this);
   }
 
   @override
@@ -123,7 +122,7 @@ class EvaluateViewState extends State<EvaluateView>
             style: TextStyle(color: Colors.white),
           ),
           onPressed: () {
-            _presenter.sendEvalData(EvalData(
+            _evalPresenter.sendEvalData(EvalData(
                 evaluator: 1,
                 uid: _contact.uid,
                 anger: _params['anger'],
@@ -144,18 +143,7 @@ class EvaluateViewState extends State<EvaluateView>
   }
 
   @override
-  void onContactsFetchComplete(List<Contact> items) {
-    // TODO: implement onContactsFetchComplete
-  }
-
-  @override
-  void onContactsFetchFailure() {
-    // TODO: implement onContactsFetchFailure
-  }
-
-  @override
   void onEvalDataFetchComplete(String status) {
-    // TODO: implement onEvalDataFetchComplete
     if (status == "Ok") {
       Navigator.pop(context, _contact);
     }
@@ -163,6 +151,6 @@ class EvaluateViewState extends State<EvaluateView>
 
   @override
   void onEvalDataFetchFailure() {
-    // TODO: implement onEvalDataFetchFailure
+    throw new UnimplementedError('onEvalDataFetchFailure');
   }
 }

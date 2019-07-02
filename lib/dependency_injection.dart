@@ -1,6 +1,9 @@
 import 'model/contact_repository.dart';
 import 'model/contact_repository_impl.dart';
 import 'model/contact_repository_mock.dart';
+import 'model/eval_repository.dart';
+import 'model/eval_repository_impl.dart';
+import 'model/eval_repository_mock.dart';
 import 'model/recommendation_repository.dart';
 import 'model/recommendation_repository_impl.dart';
 import 'model/recommendation_repository_mock.dart';
@@ -37,6 +40,15 @@ class Injector {
         return new ContactRepositoryMock();
       default:
         return new ContactRepositoryImpl();
+    }
+  }
+
+  EvalRepository get evalRepository {
+    switch (_flavor) {
+      case Flavor.mock:
+        return new EvalRepositoryMock();
+      default:
+        return new EvalRepositoryImpl();
     }
   }
 }

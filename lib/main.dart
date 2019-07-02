@@ -5,7 +5,7 @@ import 'constants.dart';
 import 'dependency_injection.dart';
 
 void main() {
-  Injector.configure(Flavor.production);
+  Injector.configure(Flavor.mock);
 
   runApp(MyApp());
 }
